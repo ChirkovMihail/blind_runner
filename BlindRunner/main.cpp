@@ -1,40 +1,92 @@
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
+#include <iostream>
+#include <string>
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+SDL_Renderer* g_renderer = NULL;
+SDL_Window* g_window = NULL;
+
+#include "texture.h"
+#include "button.h"
+
+TTexture g_start_menu_background;
+
+TButton g_start_button;
+TButton g_settings_button;
+TButton g_stat_button;
+TButton g_tutorial_button;
+
+const int SCREEN_WIDTH = 960;
+const int SCREEN_HEIGHT = 720;
+
+bool init() {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	g_window = SDL_CreateWindow("BlindRunner", SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+	if (g_window == NULL) {
+		printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (g_renderer == NULL) {
+		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+	int img_flags = IMG_INIT_PNG;
+	if (!(IMG_Init(img_flags) & img_flags)) {
+		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		return false;
+	}
+
+	return true;
+}
+
+bool load_media()
+{
+	if (!g_start_menu_background.load_from_file("images/start_menu_background1.bmp")) {
+		printf("Failed to load start menu background texture! \n");
+		return false;
+	}
+
+	if (!g_start_button.load_from_file("images/start_button1.bmp")) {
+		printf("Failed to load start button texture!\n");
+		return false;
+	}
+	if (!g_settings_button.load_from_file("images/settings_button1.bmp")) {
+		printf("Failed to load settings button texture!\n");
+		return false;
+	}
+	if (!g_stat_button.load_from_file("images/stat_button1.bmp")) {
+		printf("Failed to load statistics button texture!\n");
+		return false;
+	}
+	if (!g_tutorial_button.load_from_file("images/tutorial_button1.bmp")) {
+		printf("Failed to load tutorial button texture!\n");
+		return false;
+	}
+}
 
 int main(int argc, char* args[])
 {
-	SDL_Window* window = NULL;
-	SDL_Surface* screenSurface = NULL;
-
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-	}
-	else
-	{
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (window == NULL)
-		{
-			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-		}
-		else
-		{
-			screenSurface = SDL_GetWindowSurface(window);
-
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-			SDL_UpdateWindowSurface(window);
-
-			SDL_Event e; bool quit = false; while (quit == false) { while (SDL_PollEvent(&e)) { if (e.type == SDL_QUIT) quit = true; } }
-		}
+	if (!init()) {
+		printf("Failed to initialize!\n");
+		return 1;
 	}
 
-	SDL_DestroyWindow(window);
-
-	SDL_Quit();
+	if (!load_media()) {
+		printf("Failed to load media!\n");
+		return 2;
+	}
 
 	return 0;
 }
