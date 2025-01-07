@@ -16,11 +16,17 @@ public:
 
 	void set_pos(int x, int y);
 	void handle_event(SDL_Event* e);
+	void set_pressed(bool flag);
+
+	int get_x();
+	int get_y();
+	TButtonSprite get_curr_sprite();
+	bool get_pressed();
 
 private:
 	SDL_Point pos;
 	TButtonSprite curr_sprite;
-
+	bool pressed;
 };
 
 TButton::TButton()
@@ -28,12 +34,38 @@ TButton::TButton()
 	pos.x = 0;
 	pos.y = 0;
 	curr_sprite = BUTTON_SPRITE_MOUSE_OUT;
+	pressed = false;
+}
+
+void TButton::set_pressed(bool flag)
+{
+	pressed = flag;
+}
+
+bool TButton::get_pressed()
+{
+	return pressed;
 }
 
 void TButton::set_pos(int x, int y)
 {
 	pos.x = x;
 	pos.y = y;
+}
+
+int TButton::get_x()
+{
+	return pos.x;
+}
+
+int TButton::get_y()
+{
+	return pos.y;
+}
+
+TButtonSprite TButton::get_curr_sprite()
+{
+	return curr_sprite;
 }
 
 void TButton::handle_event(SDL_Event * e)

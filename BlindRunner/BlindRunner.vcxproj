@@ -135,6 +135,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animations.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>

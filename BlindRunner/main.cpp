@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 
+const int SCREEN_WIDTH = 960;
+const int SCREEN_HEIGHT = 720;
+
 SDL_Renderer* g_renderer = NULL;
 SDL_Window* g_window = NULL;
 
@@ -12,13 +15,10 @@ SDL_Window* g_window = NULL;
 
 TTexture g_start_menu_background;
 
-TButton g_start_button;
-TButton g_settings_button;
-TButton g_stat_button;
-TButton g_tutorial_button;
+const int START_BUTTONS_TOTAL = 4;
+TButton g_start_buttons[START_BUTTONS_TOTAL];
 
-const int SCREEN_WIDTH = 960;
-const int SCREEN_HEIGHT = 720;
+#include "animations.h"
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -58,22 +58,42 @@ bool load_media()
 		return false;
 	}
 
-	if (!g_start_button.load_from_file("images/start_button1.bmp")) {
+	if (!g_start_buttons[0].load_from_file("images/start_button1.bmp")) {
 		printf("Failed to load start button texture!\n");
 		return false;
 	}
-	if (!g_settings_button.load_from_file("images/settings_button1.bmp")) {
+	g_start_buttons[0].set_pos(205, 470);
+
+	if (!g_start_buttons[1].load_from_file("images/settings_button1.bmp")) {
 		printf("Failed to load settings button texture!\n");
 		return false;
 	}
-	if (!g_stat_button.load_from_file("images/stat_button1.bmp")) {
+	g_start_buttons[1].set_pos(g_start_buttons[0].get_x() + g_start_buttons[0].get_width() + 10, g_start_buttons[0].get_y());
+
+	if (!g_start_buttons[2].load_from_file("images/stat_button1.bmp")) {
 		printf("Failed to load statistics button texture!\n");
 		return false;
 	}
-	if (!g_tutorial_button.load_from_file("images/tutorial_button1.bmp")) {
+	g_start_buttons[2].set_pos(g_start_buttons[1].get_x() + g_start_buttons[1].get_width() + 10, g_start_buttons[0].get_y());
+
+	if (!g_start_buttons[3].load_from_file("images/tutorial_button1.bmp")) {
 		printf("Failed to load tutorial button texture!\n");
 		return false;
 	}
+	g_start_buttons[3].set_pos(g_start_buttons[2].get_x() + g_start_buttons[2].get_width()  + 10, g_start_buttons[0].get_y());
+}
+
+void close()
+{
+	g_start_menu_background.free();
+
+	SDL_DestroyRenderer(g_renderer);
+	SDL_DestroyWindow(g_window);
+	g_window = NULL;
+	g_renderer = NULL;
+
+	IMG_Quit();
+	SDL_Quit();
 }
 
 int main(int argc, char* args[])
@@ -87,6 +107,48 @@ int main(int argc, char* args[])
 		printf("Failed to load media!\n");
 		return 2;
 	}
+
+	int i, j;
+	bool main_loop_flag = false, start_animation_on_process = false;
+	SDL_Event e;
+
+	while (!main_loop_flag)
+	{
+		while (SDL_PollEvent(&e) != 0)
+		{
+			if (e.type == SDL_QUIT)
+				main_loop_flag = true;
+
+			for (i = 0; i < START_BUTTONS_TOTAL; ++i)
+				g_start_buttons[i].handle_event(&e);
+		}
+
+		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(g_renderer);
+
+		g_start_menu_background.render(0, 0);
+
+		for (i = 0; i < START_BUTTONS_TOTAL; ++i) {
+			if (g_start_buttons[i].get_curr_sprite() == BUTTON_SPRITE_MOUSE_DOWN && g_start_buttons[i].get_pressed() == false) {
+				start_animation_on_process = true;
+				for (j = 0; j < START_BUTTONS_TOTAL; ++j)
+					g_start_buttons[j].set_pressed(true);
+				start_buttons_animation(i);
+				break;
+			}
+		}
+		if (start_animation_on_process) {
+			start_animation_on_process = false;
+			continue;
+		}
+
+		for (i = 0; i < START_BUTTONS_TOTAL; ++i)
+			g_start_buttons[i].render(g_start_buttons[i].get_x(), g_start_buttons[i].get_y());
+
+		SDL_RenderPresent(g_renderer);
+	}
+
+	close();
 
 	return 0;
 }
