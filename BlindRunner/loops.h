@@ -8,8 +8,8 @@ enum LOOP_RETURNS
 
 LOOP_RETURNS game_loop()
 {
-	int pace = 5;
-	bool game_loop_flag = false;
+	int pace = 1, small_box_x = 0, small_box_y = 0;
+	bool game_loop_flag = false, small_box_created = false;
 	SDL_Event e;
 	SDL_Rect clip;
 
@@ -42,9 +42,23 @@ LOOP_RETURNS game_loop()
 		g_inf_background.render(0, 0, &clip);
 		g_to_start_menu_button.render(g_to_start_menu_button.get_x(), g_to_start_menu_button.get_y());
 
+		if (!small_box_created) {
+			small_box_created = true;
+			small_box_x = 960 + 700;
+			small_box_y = 280;
+		}
+
+		g_small_box.render(small_box_x, small_box_y);
+
 		clip.x += pace;
+		small_box_x -= pace;
+
 		if (clip.x + clip.w > 2 * SCREEN_WIDTH)
 			clip.x = 0;
+		if (small_box_x + g_small_box.get_width() < 0) {
+			small_box_created = false;
+		}
+		
 
 		SDL_RenderPresent(g_renderer);
 	}

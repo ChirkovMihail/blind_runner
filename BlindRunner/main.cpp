@@ -15,6 +15,7 @@ SDL_Window* g_window = NULL;
 
 TTexture g_start_menu_background;
 TTexture g_inf_background;
+TTexture g_small_box;
 
 const int START_BUTTONS_TOTAL = 4;
 TButton g_start_buttons[START_BUTTONS_TOTAL];
@@ -66,41 +67,47 @@ void start_buttons_init_pos()
 
 bool load_media()
 {
-	if (!g_to_start_menu_button.load_from_file("images/to_start_menu_button1.bmp")) {
+	if (!g_small_box.load_from_file("images/boxes/small_box5.png", 255, 255, 255)) {
+		printf("Failed to load small box`s texture!\n");
+		return false;
+	}
+
+	if (!g_to_start_menu_button.load_from_file("images/buttons/to_start_menu_button1.bmp")) {
 		printf("Failed to load to_start_menu_button texture!\n");
 		return false;
 	}
 
-	if (!g_inf_background.load_from_file("images/infinite_background/test_background3.bmp")) {
+	if (!g_inf_background.load_from_file("images/infinite_background/test_background5.bmp")) {
 		printf("Failed to load infinite_background texture!\n");
 		return false;
 	}
 
-	if (!g_start_menu_background.load_from_file("images/start_menu_background2.bmp")) {
+	if (!g_start_menu_background.load_from_file("images/start_menu_background/start_menu_background2.bmp")) {
 		printf("Failed to load start menu background texture! \n");
 		return false;
 	}
 
-	if (!g_start_buttons[0].load_from_file("images/start_button1.bmp")) {
+	if (!g_start_buttons[0].load_from_file("images/buttons/start_button1.bmp")) {
 		printf("Failed to load start button texture!\n");
 		return false;
 	}	
 
-	if (!g_start_buttons[1].load_from_file("images/settings_button1.bmp")) {
+	if (!g_start_buttons[1].load_from_file("images/buttons/settings_button1.bmp")) {
 		printf("Failed to load settings button texture!\n");
 		return false;
 	}	
 
-	if (!g_start_buttons[2].load_from_file("images/stat_button1.bmp")) {
+	if (!g_start_buttons[2].load_from_file("images/buttons/stat_button1.bmp")) {
 		printf("Failed to load statistics button texture!\n");
 		return false;
 	}	
 
-	if (!g_start_buttons[3].load_from_file("images/tutorial_button1.bmp")) {
+	if (!g_start_buttons[3].load_from_file("images/buttons/tutorial_button1.bmp")) {
 		printf("Failed to load tutorial button texture!\n");
 		return false;
 	}
 	start_buttons_init_pos();
+	return true;
 }
 
 void close()
