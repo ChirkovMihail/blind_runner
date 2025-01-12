@@ -14,11 +14,13 @@ SDL_Window* g_window = NULL;
 #include "button.h"
 
 TTexture g_start_menu_background;
+TTexture g_inf_background;
 
 const int START_BUTTONS_TOTAL = 4;
 TButton g_start_buttons[START_BUTTONS_TOTAL];
 
 #include "animations.h"
+#include "loops.h"
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -51,9 +53,22 @@ bool init() {
 	return true;
 }
 
+void start_buttons_init_pos()
+{
+	g_start_buttons[0].set_pos(205, 470);
+	g_start_buttons[1].set_pos(g_start_buttons[0].get_x() + g_start_buttons[0].get_width() + 10, g_start_buttons[0].get_y());
+	g_start_buttons[2].set_pos(g_start_buttons[1].get_x() + g_start_buttons[1].get_width() + 10, g_start_buttons[0].get_y());
+	g_start_buttons[3].set_pos(g_start_buttons[2].get_x() + g_start_buttons[2].get_width() + 10, g_start_buttons[0].get_y());
+}
+
 bool load_media()
 {
-	if (!g_start_menu_background.load_from_file("images/start_menu_background1.bmp")) {
+	if (!g_inf_background.load_from_file("images/infinite_background/test_background3.bmp")) {
+		printf("Failed to load start menu background texture!\n");
+		return false;
+	}
+
+	if (!g_start_menu_background.load_from_file("images/start_menu_background2.bmp")) {
 		printf("Failed to load start menu background texture! \n");
 		return false;
 	}
@@ -61,26 +76,23 @@ bool load_media()
 	if (!g_start_buttons[0].load_from_file("images/start_button1.bmp")) {
 		printf("Failed to load start button texture!\n");
 		return false;
-	}
-	g_start_buttons[0].set_pos(205, 470);
+	}	
 
 	if (!g_start_buttons[1].load_from_file("images/settings_button1.bmp")) {
 		printf("Failed to load settings button texture!\n");
 		return false;
-	}
-	g_start_buttons[1].set_pos(g_start_buttons[0].get_x() + g_start_buttons[0].get_width() + 10, g_start_buttons[0].get_y());
+	}	
 
 	if (!g_start_buttons[2].load_from_file("images/stat_button1.bmp")) {
 		printf("Failed to load statistics button texture!\n");
 		return false;
-	}
-	g_start_buttons[2].set_pos(g_start_buttons[1].get_x() + g_start_buttons[1].get_width() + 10, g_start_buttons[0].get_y());
+	}	
 
 	if (!g_start_buttons[3].load_from_file("images/tutorial_button1.bmp")) {
 		printf("Failed to load tutorial button texture!\n");
 		return false;
 	}
-	g_start_buttons[3].set_pos(g_start_buttons[2].get_x() + g_start_buttons[2].get_width()  + 10, g_start_buttons[0].get_y());
+	start_buttons_init_pos();
 }
 
 void close()
@@ -130,16 +142,16 @@ int main(int argc, char* args[])
 
 		for (i = 0; i < START_BUTTONS_TOTAL; ++i) {
 			if (g_start_buttons[i].get_curr_sprite() == BUTTON_SPRITE_MOUSE_DOWN && g_start_buttons[i].get_pressed() == false) {
-				start_animation_on_process = true;
 				for (j = 0; j < START_BUTTONS_TOTAL; ++j)
 					g_start_buttons[j].set_pressed(true);
 				start_buttons_animation(i);
 				break;
 			}
 		}
-		if (start_animation_on_process) {
-			start_animation_on_process = false;
-			continue;
+		
+		if (g_start_buttons[0].get_curr_sprite() == BUTTON_SPRITE_MOUSE_DOWN) {
+			game_loop();
+			break;
 		}
 
 		for (i = 0; i < START_BUTTONS_TOTAL; ++i)

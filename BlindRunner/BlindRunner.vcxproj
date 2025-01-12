@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="animations.h" />
     <ClInclude Include="button.h" />
+    <ClInclude Include="loops.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
