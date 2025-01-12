@@ -17,6 +17,7 @@ public:
 	void set_pos(int x, int y);
 	void handle_event(SDL_Event* e);
 	void set_pressed(bool flag);
+	void set_curr_sprite(TButtonSprite sp);
 
 	int get_x();
 	int get_y();
@@ -35,6 +36,11 @@ TButton::TButton()
 	pos.y = 0;
 	curr_sprite = BUTTON_SPRITE_MOUSE_OUT;
 	pressed = false;
+}
+
+void TButton::set_curr_sprite(TButtonSprite sp)
+{
+	curr_sprite = sp;
 }
 
 void TButton::set_pressed(bool flag)
