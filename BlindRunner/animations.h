@@ -4,7 +4,6 @@ void start_buttons_animation(int index)
 {
 	int pace = 10, i;
 
-	std::cout << index << '\n';
 	while (g_start_buttons[index].get_y() + g_start_buttons[index].get_height() > 0) {
 		g_start_buttons[index].set_pos(g_start_buttons[index].get_x(), g_start_buttons[index].get_y() - pace);
 
