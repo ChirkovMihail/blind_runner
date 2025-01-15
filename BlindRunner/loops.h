@@ -22,25 +22,15 @@ int random(int a, int b)
 	return a + (rand() + rand() * rand()) % (b - a);
 }
 
-LOOP_RETURNS game_loop()
+const int BOX_TOTAL = 52;
+TBox boxes[BOX_TOTAL];
+
+const int CURR_BOX_TOTAL = 3;
+TBox curr_boxes[CURR_BOX_TOTAL];
+
+void init_boxes()
 {
-	int pace = 5, i;
-	bool game_loop_flag = false;
-	SDL_Event e;
-	SDL_Rect clip;
-
-	clip.x = 0;
-	clip.y = 0;
-	clip.w = SCREEN_WIDTH;
-	clip.h = SCREEN_HEIGHT;
-
-	const int BOX_TOTAL = 52;
-	TBox boxes[BOX_TOTAL];
-	TBox box1, box2;
-	bool box1_created = false, box2_created = false;
-
-	g_to_start_menu_button.set_pos(470, 470);
-
+	int i;
 	char d, c;
 	std::string s;
 	for (i = 0, d = 'a'; i < 26; ++i, d++) {
@@ -62,17 +52,72 @@ LOOP_RETURNS game_loop()
 		s = "images/alphabet/" + s + ".bmp";
 		boxes[i].load_from_file(s);
 	}
+}
 
+void create_box(int index)
+{
+	int i;
+	bool flag;
+
+	curr_boxes[index] = boxes[random(0, BOX_TOTAL)];
+
+	while (1)
+	{
+		curr_boxes[index].set_x(random(SCREEN_WIDTH, SCREEN_WIDTH + 2 * SCREEN_WIDTH));
+		flag = true;
+		for (i = 0; i < CURR_BOX_TOTAL && flag; ++i) {
+			if (i == index)
+				continue;
+			if (intersect(curr_boxes[i].get_x(), curr_boxes[i].get_x() + curr_boxes[i].get_width(),
+				curr_boxes[index].get_x(), curr_boxes[index].get_x() + curr_boxes[index].get_width()))
+				flag = false;
+		}
+		if (flag)
+			break;
+	}
+
+	if (curr_boxes[index].get_height() == 200)
+		curr_boxes[index].set_y(200);
+	else
+		curr_boxes[index].set_y(280);
+}
+
+LOOP_RETURNS game_loop()
+{
+	int pace = 5, i;
+	bool game_loop_flag = false, do_attack = false;
+	SDL_Event e;
+	SDL_Rect clip;
+
+	clip.x = 0;
+	clip.y = 0;
+	clip.w = SCREEN_WIDTH;
+	clip.h = SCREEN_HEIGHT;
+
+	g_to_start_menu_button.set_pos(470, 470);	
+	init_boxes();
 	srand(time(NULL));
+	for (i = 0; i < CURR_BOX_TOTAL; ++i) {
+		create_box(i);
+	}
 
-	TBox test = boxes[0];
 	while (!game_loop_flag)
 	{
+		do_attack = false;
 		while (SDL_PollEvent(&e) != 0) 
 		{
 			if (e.type == SDL_QUIT) {
 				game_loop_flag = true;
 				return LOOP_EXIT;
+			}
+			else {
+				if (e.type == SDL_KEYDOWN) {
+					switch (e.key.keysym.sym) {
+					case SDLK_SPACE:
+						do_attack = true;
+						break;
+					}
+				}
 			}
 			g_to_start_menu_button.handle_event(&e);
 		}
@@ -81,57 +126,26 @@ LOOP_RETURNS game_loop()
 			return TO_START_MENU;
 		}
 
+
+
 		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(g_renderer);
 
 		g_inf_background.render(0, 0, &clip);
 		g_to_start_menu_button.render(g_to_start_menu_button.get_x(), g_to_start_menu_button.get_y());
-
-		if (!box1_created) {
-			box1_created = true;
-			box1 = boxes[random(0, BOX_TOTAL)];
-			box1.set_x(random(960, 960 + 960));
-			if (box2_created) {
-				if (intersect(box1.get_x(), box1.get_x() + box1.get_width(), box2.get_x(), box2.get_x() + box2.get_width())) {
-					box1.set_x(box2.get_x() + box2.get_width() + 5);
-				}
-			}
-			if (box1.get_height() == 200)
-				box1.set_y(200);
-			else
-				box1.set_y(280);
-		}
-
-		if (!box2_created) {
-			box2_created = true;
-			box2 = boxes[random(0, BOX_TOTAL)];
-			box2.set_x(random(960, 960 + 960));
-			if (box1_created) {
-				if (intersect(box1.get_x(), box1.get_x() + box1.get_width(), box2.get_x(), box2.get_x() + box2.get_width())) {
-					box2.set_x(box1.get_x() + box1.get_width() + 5);
-				}
-			}
-			if (box2.get_height() == 200)
-				box2.set_y(200);
-			else
-				box2.set_y(280);
-		}
-
-		box1.render(box1.get_x(), box1.get_y());
-		box2.render(box2.get_x(), box2.get_y());
+		for (i = 0; i < CURR_BOX_TOTAL; ++i)
+			curr_boxes[i].render(curr_boxes[i].get_x(), curr_boxes[i].get_y());
 
 		clip.x += pace;
-		box1.set_x(box1.get_x() - pace);
-		box2.set_x(box2.get_x() - pace);
+		for (i = 0; i < CURR_BOX_TOTAL; ++i)
+			curr_boxes[i].set_x(curr_boxes[i].get_x() - pace);
 
 		if (clip.x + clip.w > 2 * SCREEN_WIDTH)
 			clip.x = 0;
-		if (box1.get_x() + box1.get_width() < 0) {
-			box1_created = false;
-		}
-		if (box2.get_x() + box2.get_width() < 0) {
-			box2_created = false;
-		}
+		for (i = 0; i < CURR_BOX_TOTAL; ++i)
+			if (curr_boxes[i].get_x() + curr_boxes[i].get_width() < 0) {
+				create_box(i);
+			}
 
 		SDL_RenderPresent(g_renderer);
 	}
