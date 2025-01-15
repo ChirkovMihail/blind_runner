@@ -96,8 +96,8 @@ LOOP_RETURNS game_loop()
 	clip.w = SCREEN_WIDTH;
 	clip.h = SCREEN_HEIGHT;
 
-	att_range.first = 100;
-	att_range.second = 300;
+	att_range.first = 100 + g_man.get_width();
+	att_range.second = att_range.first + 200;
 	g_to_start_menu_button.set_pos(470, 470);	
 	init_boxes();
 	srand(time(NULL));
@@ -142,8 +142,11 @@ LOOP_RETURNS game_loop()
 
 		g_inf_background.render(0, 0, &clip);
 		g_to_start_menu_button.render(g_to_start_menu_button.get_x(), g_to_start_menu_button.get_y());
-		for (i = 0; i < CURR_BOX_TOTAL; ++i)
-			curr_boxes[i].render(curr_boxes[i].get_x(), curr_boxes[i].get_y());
+		for (i = 0; i < CURR_BOX_TOTAL; ++i) {
+			if (curr_boxes[i].get_active())
+				curr_boxes[i].render(curr_boxes[i].get_x(), curr_boxes[i].get_y());
+		}
+		g_man.render(100, 130);
 
 		clip.x += pace;
 		for (i = 0; i < CURR_BOX_TOTAL; ++i)
