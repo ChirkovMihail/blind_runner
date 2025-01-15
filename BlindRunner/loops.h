@@ -15,12 +15,17 @@ bool intersect(int a, int b, int c, int d)
 	return false;
 }
 
+int random(int a, int b)
+{
+	if (b <= a)
+		return a;
+	return a + (rand() + rand() * rand()) % (b - a);
+}
+
 LOOP_RETURNS game_loop()
 {
-	int pace = 5;
-	int small_box_x = 0, small_box_y = 0;
-	int big_box_x = 0, big_box_y = 0;
-	bool game_loop_flag = false, small_box_created = false, big_box_created = false;
+	int pace = 5, i;
+	bool game_loop_flag = false;
 	SDL_Event e;
 	SDL_Rect clip;
 
@@ -29,10 +34,38 @@ LOOP_RETURNS game_loop()
 	clip.w = SCREEN_WIDTH;
 	clip.h = SCREEN_HEIGHT;
 
+	const int BOX_TOTAL = 52;
+	TBox boxes[BOX_TOTAL];
+	TBox box1, box2;
+	bool box1_created = false, box2_created = false;
+
 	g_to_start_menu_button.set_pos(470, 470);
+
+	char d, c;
+	std::string s;
+	for (i = 0, d = 'a'; i < 26; ++i, d++) {
+		boxes[i] = TBox();
+		s = "";
+		s += d;
+		if (!('a' <= d && d <= 'z'))
+			s += '1';
+		s = "images/alphabet/" + s + ".bmp";
+		boxes[i].load_from_file(s);
+	}
+
+	for (i = 26, d = 'A'; i < BOX_TOTAL; ++i, d++) {
+		boxes[i] = TBox();
+		s = "";
+		s += d;
+		if (!('a' <= d && d <= 'z'))
+			s += '1';
+		s = "images/alphabet/" + s + ".bmp";
+		boxes[i].load_from_file(s);
+	}
 
 	srand(time(NULL));
 
+	TBox test = boxes[0];
 	while (!game_loop_flag)
 	{
 		while (SDL_PollEvent(&e) != 0) 
@@ -54,41 +87,50 @@ LOOP_RETURNS game_loop()
 		g_inf_background.render(0, 0, &clip);
 		g_to_start_menu_button.render(g_to_start_menu_button.get_x(), g_to_start_menu_button.get_y());
 
-		if (!small_box_created) {
-			small_box_created = true;
-			small_box_x = 960 + (rand() * rand() + rand()) % 960;
-			if (big_box_created) {
-				if (intersect(small_box_x, small_box_x + g_small_box.get_width(), big_box_x, big_box_x + g_big_box.get_width())) {
-					small_box_x = big_box_x + g_big_box.get_width() + 1;
+		if (!box1_created) {
+			box1_created = true;
+			box1 = boxes[random(0, BOX_TOTAL)];
+			box1.set_x(random(960, 960 + 960));
+			if (box2_created) {
+				if (intersect(box1.get_x(), box1.get_x() + box1.get_width(), box2.get_x(), box2.get_x() + box2.get_width())) {
+					box1.set_x(box2.get_x() + box2.get_width() + 5);
 				}
 			}
-			small_box_y = 280;
-		}
-		if (!big_box_created) {
-			big_box_created = true;
-			big_box_x = 960 + (rand() * rand() + rand()) % 960;
-			if (small_box_created) {
-				if (intersect(small_box_x, small_box_x + g_small_box.get_width(), big_box_x, big_box_x + g_big_box.get_width())) {
-					big_box_x = small_box_x + g_small_box.get_width() + 1;
-				}
-			}
-			big_box_y = 200;
+			if (box1.get_height() == 200)
+				box1.set_y(200);
+			else
+				box1.set_y(280);
 		}
 
-		g_small_box.render(small_box_x, small_box_y);
-		g_big_box.render(big_box_x, big_box_y);
+		if (!box2_created) {
+			box2_created = true;
+			box2 = boxes[random(0, BOX_TOTAL)];
+			box2.set_x(random(960, 960 + 960));
+			if (box1_created) {
+				if (intersect(box1.get_x(), box1.get_x() + box1.get_width(), box2.get_x(), box2.get_x() + box2.get_width())) {
+					box2.set_x(box1.get_x() + box1.get_width() + 5);
+				}
+			}
+			if (box2.get_height() == 200)
+				box2.set_y(200);
+			else
+				box2.set_y(280);
+		}
+
+		box1.render(box1.get_x(), box1.get_y());
+		box2.render(box2.get_x(), box2.get_y());
 
 		clip.x += pace;
-		small_box_x -= pace;
-		big_box_x -= pace;
+		box1.set_x(box1.get_x() - pace);
+		box2.set_x(box2.get_x() - pace);
 
 		if (clip.x + clip.w > 2 * SCREEN_WIDTH)
 			clip.x = 0;
-		if (small_box_x + g_small_box.get_width() < 0) {
-			small_box_created = false;
+		if (box1.get_x() + box1.get_width() < 0) {
+			box1_created = false;
 		}
-		if (big_box_x + g_big_box.get_width() < 0) {
-			big_box_created = false;
+		if (box2.get_x() + box2.get_width() < 0) {
+			box2_created = false;
 		}
 
 		SDL_RenderPresent(g_renderer);
@@ -101,7 +143,7 @@ void main_loop()
 	int i, j;
 	bool main_loop_flag = false;
 	SDL_Event e;
-	LOOP_RETURNS game_loop_res;
+	LOOP_RETURNS game_loop_res;	
 
 	while (!main_loop_flag)
 	{

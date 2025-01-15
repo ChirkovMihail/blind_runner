@@ -32,5 +32,8 @@
     <ClInclude Include="loops.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="box.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

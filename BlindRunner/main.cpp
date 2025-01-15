@@ -12,11 +12,10 @@ SDL_Window* g_window = NULL;
 
 #include "texture.h"
 #include "button.h"
+#include "box.h"
 
 TTexture g_start_menu_background;
 TTexture g_inf_background;
-TTexture g_small_box;
-TTexture g_big_box;
 
 const int START_BUTTONS_TOTAL = 4;
 TButton g_start_buttons[START_BUTTONS_TOTAL];
@@ -68,16 +67,6 @@ void start_buttons_init_pos()
 
 bool load_media()
 {
-	if (!g_big_box.load_from_file("images/alphabet/C1.bmp")) {
-		printf("Failed to load big box`s texture!\n");
-		return false;
-	}
-
-	if (!g_small_box.load_from_file("images/alphabet/c.bmp")) {
-		printf("Failed to load small box`s texture!\n");
-		return false;
-	}
-
 	if (!g_to_start_menu_button.load_from_file("images/buttons/to_start_menu_button1.bmp")) {
 		printf("Failed to load to_start_menu_button texture!\n");
 		return false;
@@ -119,6 +108,7 @@ bool load_media()
 void close()
 {
 	g_start_menu_background.free();
+	g_inf_background.free();
 
 	SDL_DestroyRenderer(g_renderer);
 	SDL_DestroyWindow(g_window);
