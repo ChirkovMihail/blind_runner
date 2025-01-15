@@ -60,6 +60,7 @@ void create_box(int index)
 	bool flag;
 
 	curr_boxes[index] = boxes[random(0, BOX_TOTAL)];
+	curr_boxes[index].set_active(true);
 
 	while (1)
 	{
@@ -85,6 +86,7 @@ void create_box(int index)
 LOOP_RETURNS game_loop()
 {
 	int pace = 5, i;
+	std::pair<int, int> att_range;
 	bool game_loop_flag = false, do_attack = false;
 	SDL_Event e;
 	SDL_Rect clip;
@@ -94,6 +96,8 @@ LOOP_RETURNS game_loop()
 	clip.w = SCREEN_WIDTH;
 	clip.h = SCREEN_HEIGHT;
 
+	att_range.first = 100;
+	att_range.second = 300;
 	g_to_start_menu_button.set_pos(470, 470);	
 	init_boxes();
 	srand(time(NULL));
@@ -126,7 +130,12 @@ LOOP_RETURNS game_loop()
 			return TO_START_MENU;
 		}
 
-
+		if (do_attack) {
+			for (i = 0; i < CURR_BOX_TOTAL; ++i) {
+				if (att_range.first <= curr_boxes[i].get_x() && curr_boxes[i].get_x() <= att_range.second)
+					curr_boxes[i].set_active(false);
+			}
+		}
 
 		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(g_renderer);
@@ -142,10 +151,14 @@ LOOP_RETURNS game_loop()
 
 		if (clip.x + clip.w > 2 * SCREEN_WIDTH)
 			clip.x = 0;
-		for (i = 0; i < CURR_BOX_TOTAL; ++i)
+		for (i = 0; i < CURR_BOX_TOTAL; ++i) {
+			if (curr_boxes[i].get_x() < att_range.first && curr_boxes[i].get_active()) {
+				return TO_START_MENU;
+			}
 			if (curr_boxes[i].get_x() + curr_boxes[i].get_width() < 0) {
 				create_box(i);
 			}
+		}
 
 		SDL_RenderPresent(g_renderer);
 	}
