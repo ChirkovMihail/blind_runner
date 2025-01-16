@@ -9,6 +9,7 @@ public:
 	void set_x(int x);
 	void set_y(int y);
 	void set_active(bool flag);
+	void set_char(char d);
 
 	int get_x();
 	int get_y();
@@ -20,6 +21,11 @@ private:
 	bool active;
 	char c;
 };
+
+void TBox::set_char(char d)
+{
+	c = d;
+}
 
 void TBox::set_active(bool flag)
 {

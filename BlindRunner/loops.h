@@ -41,6 +41,7 @@ void init_boxes()
 			s += '1';
 		s = "images/alphabet/" + s + ".bmp";
 		boxes[i].load_from_file(s);
+		boxes[i].set_char(d);
 	}
 
 	for (i = 26, d = 'A'; i < BOX_TOTAL; ++i, d++) {
@@ -51,6 +52,7 @@ void init_boxes()
 			s += '1';
 		s = "images/alphabet/" + s + ".bmp";
 		boxes[i].load_from_file(s);
+		boxes[i].set_char(d);
 	}
 }
 
@@ -85,7 +87,8 @@ void create_box(int index)
 
 LOOP_RETURNS game_loop()
 {
-	int pace = 5, i;
+	int pace = 2, i;
+	char att_c;
 	std::pair<int, int> att_range;
 	bool game_loop_flag = false, do_attack = false;
 	SDL_Event e;
@@ -107,6 +110,7 @@ LOOP_RETURNS game_loop()
 
 	while (!game_loop_flag)
 	{
+		att_c = '0';
 		do_attack = false;
 		while (SDL_PollEvent(&e) != 0) 
 		{
@@ -116,10 +120,17 @@ LOOP_RETURNS game_loop()
 			}
 			else {
 				if (e.type == SDL_KEYDOWN) {
-					switch (e.key.keysym.sym) {
-					case SDLK_SPACE:
-						do_attack = true;
-						break;
+					if (e.key.keysym.mod & KMOD_SHIFT) {
+						if (e.key.keysym.sym >= SDLK_a && e.key.keysym.sym <= SDLK_z) {
+							do_attack = true;
+							att_c = 'A' + (e.key.keysym.sym - SDLK_a);
+						}
+					}
+					else {
+						if (e.key.keysym.sym >= SDLK_a && e.key.keysym.sym <= SDLK_z) {
+							do_attack = true;
+							att_c = 'a' + (e.key.keysym.sym - SDLK_a);
+						}
 					}
 				}
 			}
@@ -132,7 +143,8 @@ LOOP_RETURNS game_loop()
 
 		if (do_attack) {
 			for (i = 0; i < CURR_BOX_TOTAL; ++i) {
-				if (att_range.first <= curr_boxes[i].get_x() && curr_boxes[i].get_x() <= att_range.second)
+				if (att_range.first <= curr_boxes[i].get_x() && curr_boxes[i].get_x() <= att_range.second 
+					&& att_c == curr_boxes[i].get_char())
 					curr_boxes[i].set_active(false);
 			}
 		}
