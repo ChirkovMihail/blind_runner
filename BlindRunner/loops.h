@@ -87,7 +87,7 @@ void create_box(int index)
 
 LOOP_RETURNS game_loop()
 {
-	int pace = 2, i;
+	int pace = 2, i, curr_run_frame = 0, run_pace = 15;
 	char att_c;
 	std::pair<int, int> att_range;
 	bool game_loop_flag = false, do_attack = false;
@@ -99,7 +99,7 @@ LOOP_RETURNS game_loop()
 	clip.w = SCREEN_WIDTH;
 	clip.h = SCREEN_HEIGHT;
 
-	att_range.first = 100 + g_man.get_width();
+	att_range.first = 100 + g_man[0].get_width();
 	att_range.second = att_range.first + 200;
 	g_to_start_menu_button.set_pos(470, 470);	
 	init_boxes();
@@ -152,14 +152,19 @@ LOOP_RETURNS game_loop()
 		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(g_renderer);
 
+		//render
+
 		g_inf_background.render(0, 0, &clip);
 		g_to_start_menu_button.render(g_to_start_menu_button.get_x(), g_to_start_menu_button.get_y());
 		for (i = 0; i < CURR_BOX_TOTAL; ++i) {
 			if (curr_boxes[i].get_active())
 				curr_boxes[i].render(curr_boxes[i].get_x(), curr_boxes[i].get_y());
 		}
-		g_man.render(100, 130);
+		g_man[curr_run_frame / run_pace].render(100, 130);
 
+		//shift
+
+		curr_run_frame = (curr_run_frame + 1) % (MAN_FRAMES_TOTAL * run_pace);
 		clip.x += pace;
 		for (i = 0; i < CURR_BOX_TOTAL; ++i)
 			curr_boxes[i].set_x(curr_boxes[i].get_x() - pace);
@@ -201,7 +206,7 @@ void main_loop()
 		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(g_renderer);
 
-		g_start_menu_background.render(0, 0);
+		g_inf_background.render(0, 0);
 
 		for (i = 0; i < START_BUTTONS_TOTAL; ++i) {
 			if (g_start_buttons[i].get_curr_sprite() == BUTTON_SPRITE_MOUSE_DOWN && g_start_buttons[i].get_pressed() == false) {

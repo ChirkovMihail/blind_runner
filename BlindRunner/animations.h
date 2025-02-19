@@ -16,7 +16,7 @@ void start_buttons_animation(int index)
 		SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(g_renderer);
 
-		g_start_menu_background.render(0, 0);
+		g_inf_background.render(0, 0);
 
 		for (i = 0; i < START_BUTTONS_TOTAL; ++i)
 			g_start_buttons[i].render(g_start_buttons[i].get_x(), g_start_buttons[i].get_y());

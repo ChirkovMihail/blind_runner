@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 const int SCREEN_WIDTH = 960;
 const int SCREEN_HEIGHT = 720;
@@ -16,7 +17,8 @@ SDL_Window* g_window = NULL;
 
 TTexture g_start_menu_background;
 TTexture g_inf_background;
-TTexture g_man;
+const int MAN_FRAMES_TOTAL = 6;
+TTexture g_man[MAN_FRAMES_TOTAL];
 
 const int START_BUTTONS_TOTAL = 4;
 TButton g_start_buttons[START_BUTTONS_TOTAL];
@@ -68,9 +70,13 @@ void start_buttons_init_pos()
 
 bool load_media()
 {
-	if (!g_man.load_from_file("images/man/test_man1.bmp")) {
-		printf("Failed to load man texture!\n");
-		return false;
+	std::string path;
+	for (int i = 0; i < MAN_FRAMES_TOTAL; ++i) {
+		path = "images/man/running_man_frame" + std::to_string(i + 1) + ".bmp";
+		if (!g_man[i].load_from_file(path, 255, 255, 255)) {
+			printf("Failed to load man texture!\n");
+			return false;
+		}
 	}
 
 	if (!g_to_start_menu_button.load_from_file("images/buttons/to_start_menu_button1.bmp")) {
