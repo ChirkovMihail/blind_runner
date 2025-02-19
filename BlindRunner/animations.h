@@ -7,7 +7,7 @@ void start_buttons_animation(int index)
 	while (g_start_buttons[index].get_y() + g_start_buttons[index].get_height() > 0) {
 		g_start_buttons[index].set_pos(g_start_buttons[index].get_x(), g_start_buttons[index].get_y() - pace);
 
-		for (i = 0; i < START_BUTTONS_TOTAL; ++i)
+		for (i = 0; i < ACTIVE_BUTTONS; ++i)
 			if (i != index) {
 				if (g_start_buttons[i].get_y() + pace < SCREEN_HEIGHT + pace + 1)
 					g_start_buttons[i].set_pos(g_start_buttons[i].get_x(), g_start_buttons[i].get_y() + pace);
@@ -18,7 +18,7 @@ void start_buttons_animation(int index)
 
 		g_inf_background.render(0, 0);
 
-		for (i = 0; i < START_BUTTONS_TOTAL; ++i)
+		for (i = 0; i < ACTIVE_BUTTONS; ++i)
 			g_start_buttons[i].render(g_start_buttons[i].get_x(), g_start_buttons[i].get_y());
 
 		SDL_RenderPresent(g_renderer);

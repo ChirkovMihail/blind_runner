@@ -101,7 +101,7 @@ LOOP_RETURNS game_loop()
 
 	att_range.first = 100 + g_man[0].get_width();
 	att_range.second = att_range.first + 200;
-	g_to_start_menu_button.set_pos(470, 470);	
+	g_to_start_menu_button.set_pos(415, 470);	
 	init_boxes();
 	srand(time(NULL));
 	for (i = 0; i < CURR_BOX_TOTAL; ++i) {
@@ -208,9 +208,9 @@ void main_loop()
 
 		g_inf_background.render(0, 0);
 
-		for (i = 0; i < START_BUTTONS_TOTAL; ++i) {
+		for (i = 0; i < ACTIVE_BUTTONS; ++i) {
 			if (g_start_buttons[i].get_curr_sprite() == BUTTON_SPRITE_MOUSE_DOWN && g_start_buttons[i].get_pressed() == false) {
-				for (j = 0; j < START_BUTTONS_TOTAL; ++j)
+				for (j = 0; j < ACTIVE_BUTTONS; ++j)
 					g_start_buttons[j].set_pressed(true);
 				start_buttons_animation(i);
 				break;
@@ -224,14 +224,14 @@ void main_loop()
 			}
 			if (game_loop_res == TO_START_MENU) {
 				start_buttons_init_pos();
-				for (i = 0; i < START_BUTTONS_TOTAL; ++i) {
+				for (i = 0; i < ACTIVE_BUTTONS; ++i) {
 					g_start_buttons[i].set_pressed(false);
 					g_start_buttons[i].set_curr_sprite(BUTTON_SPRITE_MOUSE_OUT);
 				}
 			}
 		}
 
-		for (i = 0; i < START_BUTTONS_TOTAL; ++i)
+		for (i = 0; i < ACTIVE_BUTTONS; ++i)
 			g_start_buttons[i].render(g_start_buttons[i].get_x(), g_start_buttons[i].get_y());
 
 		SDL_RenderPresent(g_renderer);

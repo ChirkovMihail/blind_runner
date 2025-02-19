@@ -21,6 +21,7 @@ const int MAN_FRAMES_TOTAL = 6;
 TTexture g_man[MAN_FRAMES_TOTAL];
 
 const int START_BUTTONS_TOTAL = 4;
+const int ACTIVE_BUTTONS = 1;
 TButton g_start_buttons[START_BUTTONS_TOTAL];
 TButton g_to_start_menu_button;
 
@@ -62,7 +63,7 @@ bool init() {
 
 void start_buttons_init_pos()
 {
-	g_start_buttons[0].set_pos(205, 470);
+	g_start_buttons[0].set_pos(415, 470);
 	g_start_buttons[1].set_pos(g_start_buttons[0].get_x() + g_start_buttons[0].get_width() + 10, g_start_buttons[0].get_y());
 	g_start_buttons[2].set_pos(g_start_buttons[1].get_x() + g_start_buttons[1].get_width() + 10, g_start_buttons[0].get_y());
 	g_start_buttons[3].set_pos(g_start_buttons[2].get_x() + g_start_buttons[2].get_width() + 10, g_start_buttons[0].get_y());
